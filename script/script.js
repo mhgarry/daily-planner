@@ -52,5 +52,8 @@ $(function() {
     // attribute of each time-block be used to do this?
     
     // TODO: Add code to display the current date in the header of the page
-   
+    let fullDate = new Date();console.log(fullDate);
+    let twoDigitMonth = fullDate.getMonth()+"";if(twoDigitMonth.length==1)	twoDigitMonth="0" +twoDigitMonth;
+    let twoDigitDate = fullDate.getDate()+"";if(twoDigitDate.length==1)	twoDigitDate="0" +twoDigitDate;
+    let currentDate = twoDigitDate + "/" + twoDigitMonth + "/" + fullDate.getFullYear();console.log(currentDate);
     });
