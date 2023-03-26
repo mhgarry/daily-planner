@@ -1,43 +1,59 @@
+//added documenet to make sure it targets the whole document and it won't start unitl ready
+$(document).ready(function() {
 
+  // Get the current date and time using dayjs method
+  var currentDate = dayjs();
+  // Display the current date at the top of the calendar using dayjs method
+  $("#currentDay").text(currentDate.format("dddd, MMMM D"));
 
-  // Wrap all code that interacts with the DOM in a call to jQuery to ensure that
-// the code isn't run until the browser has finished rendering all the elements
-// in the html.
-$(function () {
-    var timeBlocks = $(".time-block");
-    
-//   timeBlocks.each(function() {
-//      var timeBlock = $(this);
+  // Define the start and end hours of the work day
+  var startHour = 9;
+  var endHour = 17;
+  //using example HTML make the HTML in JavaScript 
+  // Loop through each hour 9 through 5 
+  for (var i = startHour; i <= endHour; i++) {
+    // Create a new time block element for the current hour
+    var timeBlock = $("<div>").attr("id", "hour-" + i).addClass("row time-block");
 
-//     var timeBlockHour = timeBlocks.attr("id").spilit("-")[1];
-//     var currentHour = dayjs().currentHour()
-// })
+    // Create a new hour element for the current hour
+    var hour = $("<div>").addClass("col-2 col-md-1 hour text-center py-3").text(dayjs({ hour: i }).format("ha"));
 
-  // TODO: Add a listener for click events on the save button. This code should
-  // use the id in the containing time-block as a key to save the user input in
-  // local storage. HINT: What does `this` reference in the click listener
-  // function? How can DOM traversal be used to get the "hour-x" id of the
-  // time-block containing the button that was clicked? How might the id be
-  // useful when saving the description in local storage?
-  
-  // TODO: Add code to apply the past, present, or future class to each time
-  // block by comparing the id to the current hour. HINTS: How can the id
-  // attribute of each time-block be used to conditionally add or remove the
-  // past, present, and future classes? How can Day.js be used to get the
-  // current hour in 24-hour time?
-  //
-  // TODO: Add code to get any user input that was saved in localStorage and set
-  // the values of the corresponding textarea elements. HINT: How can the id
-  // attribute of each time-block be used to do this?
-  Date.prototype.yyyymmdd = function() {
-    var yyyy = this.getFullYear().toString();
-    var mm = (this.getMonth()+1).toString(); // getMonth() is zero-based
-    var dd  = this.getDate().toString();
-    return yyyy + "/" + (mm[1]?mm:"0"+mm[0]) + "/" + (dd[1]?dd:"0"+dd[0]); // padding
-  };
-  
-  var date = new Date();
-  var dateText = date.toString()
-  document.getElementById("currentDay").innerHTML += dateText
+    // Create a new description element for the current hour
+    var description = $("<textarea>").addClass("col-8 col-md-10 description").attr("rows", "3");
+
+    // Load the saved data for the current hour, if it exists
+    var savedData = JSON.parse(localStorage.getItem("hour-" + i));
+    if (savedData !== null) {
+      description.val(savedData);
+    }
+
+    // Create a save button element for the current hour
+    var saveBtn = $("<button>").addClass("btn saveBtn col-2 col-md-1").attr("aria-label", "save");
+    var saveIcon = $("<i>").addClass("fas fa-save").attr("aria-hidden", "true");
+    saveBtn.append(saveIcon);
+
+    // show the hour, description, and save button to the time block 
+    timeBlock.append(hour, description, saveBtn);
+
+    // Determine whether the current hour is in the past, present, or future and apply the appropriate class
+    if (i < currentDate.hour()) {
+      timeBlock.addClass("past");
+    } else if (i === currentDate.hour()) {
+      timeBlock.addClass("present");
+    } else {
+      timeBlock.addClass("future");
+    }
+
+    // add the time block element to the container element
+    $(".container-fluid").append(timeBlock);
+  }
+
+  // When a save button is clicked, save the data for the  hour clicked to local storage
+  //used event handler and variables to find where data is 
+  $(".saveBtn").on("click", function() {
+    var hour = $(this).parent().attr("id");
+    var description = $(this).siblings(".description").val();
+    localStorage.setItem(hour, JSON.stringify(description));
+  });
 
 });
